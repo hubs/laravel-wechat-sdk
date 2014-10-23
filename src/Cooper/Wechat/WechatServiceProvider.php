@@ -36,7 +36,8 @@ class WechatServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-
+        $this->app->bind('wechatserver', 'Cooper\Wechat\WeChatServer');
+        $this->app->bind('wechatclient', 'Cooper\Wechat\WeChatClient');
 	}
 
 	/**
