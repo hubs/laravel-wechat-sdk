@@ -56,6 +56,25 @@ class WeChatServer {
     }
 
     /**
+     * 获取发送用户的Id
+     *
+     * @return mixed
+     */
+    public function getFromUserId()
+    {
+        return self::$_from_id;
+    }
+
+    /**
+     * 获取接收消息的微信服务号
+     *
+     * @return mixed
+     */
+    public function getAppId()
+    {
+        return self::$_my_id;
+    }
+    /**
      * 获取消息数据
      *
      * @return array
@@ -64,6 +83,7 @@ class WeChatServer {
     {
         return $this->message;
     }
+
 
     /**
      * 验证微信来源

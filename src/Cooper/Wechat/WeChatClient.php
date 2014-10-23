@@ -416,8 +416,6 @@ class WeChatClient {
      */
     private function _send($to, $type, $data)
     {
-        $access_token = $this->getAccessToken();
-        $url          = self::$_URL_API_ROOT . "/cgi-bin/message/custom/send?access_token=$access_token";
 
         $json = json_encode(
             array(
@@ -426,6 +424,11 @@ class WeChatClient {
                 $type     => $data
             )
         );
+        //如果是debug状态下,直接返回内容
+        if(Input::get('debug') == 'true') return $json;
+
+        $access_token = $this->getAccessToken();
+        $url          = self::$_URL_API_ROOT . "/cgi-bin/message/custom/send?access_token=$access_token";
 
         $res = self::post($url, $json);
 
