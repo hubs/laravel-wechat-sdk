@@ -36,14 +36,23 @@
 
 ##2、使用
 
-命名空间加载类：
+* 命名空间加载类：
 
 `use \Cooper\Wechat\WeChatServer` 可以传参 `Token`，不传则使用`wechat.php`配置的参数。
 
 `use \Cooper\Wechat\WeChatClient` 可以传参 `appId` `appSecret` , 不传同上。
 
+* 不用命名空间加载,和new, 直接按照静态方式使用`WeChatServer`,`WeChatClient`:
 
+```
+Route::any('/weixin',function(){
 
+    //获取接收到的消息
+    $message = WeChatServer::getMessage();
+    return $message;
+})
+
+```
 
 ##3、类（说明）
 
