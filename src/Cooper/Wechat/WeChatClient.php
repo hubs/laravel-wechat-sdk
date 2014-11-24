@@ -422,7 +422,7 @@ class WeChatClient {
                 'touser'  => $to,
                 'msgtype' => $type,
                 $type     => $data
-            )
+            ), JSON_UNESCAPED_UNICODE
         );
         //如果是debug状态下,直接返回内容
         if(Input::get('debug') == 'true') return $json;
