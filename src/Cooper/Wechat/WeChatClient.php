@@ -112,6 +112,8 @@ class WeChatClient {
 
     private static $_accessTokenCache = array();
 
+    private static $_jsapiTicketCache = array();
+
     private static $ERROR_LOGS = array();
 
     private static $ERROR_NO = 0;
@@ -300,6 +302,70 @@ class WeChatClient {
                 'expire' => $tokenInfo['expire']
             );
         }
+    }
+
+    /**
+     * 获取jsapi_ticket
+     * @param int $ticketOnly
+     * @param int $nocache
+     * @return array|null
+     */
+    private function _getJSticket($ticketOnly = 1, $nocache = 0)
+    {
+        $jsTicketInfo = NULL;
+        $appid       = $this->_appid;
+        $cachename   = 'wechatat_jsapi_ticket_' . $appid;
+
+        if ($nocache || empty(self::$_accessTokenCache[$appid]))
+        {
+            self::$_jsapiTicketCache[$appid] = Cache::get($cachename);
+        }
+
+        if (!empty(self::$_jsapiTicketCache[$appid]))
+        {
+            $jsTicketInfo = self::$_jsapiTicketCache[$appid];
+            if (time() < $jsTicketInfo['expiration'])
+            {
+                return $ticketOnly ? $jsTicketInfo['ticket'] : $jsTicketInfo;
+            }
+        }
+
+        $access_token = $this->getAccessToken();
+        $url          = self::$_URL_FILE_API_ROOT . "/cgi-bin/ticket/getticket??access_token=$access_token&type=jsapi";
+        $res          = json_decode(self::get($url), TRUE); 
+        
+        if (self::checkIsSuc($res))
+        {
+            self::$_jsapiTicketCache[$appid] = $jsTicketInfo = array(
+                'ticket'      => $res['ticket'],
+                'expiration' => time() + (int)$res['expires_in']
+            );
+
+            Cache::put($cachename, $jsTicketInfo, ((int)$res['expires_in'] / 60));
+        }
+
+        return NULL;
+    }
+
+    /**
+     * [getSignature description]
+     * @param  string   $nocestr   
+     * @param  int      $timestamp 
+     * @param  string   $url       
+     * @return array   
+     */
+    public function getSignature($noncestr,$timestamp,$url)
+    {
+        $str = http_build_query(
+                    [
+                        "jsapi_ticket"  =>  $this->_getJSticket(),
+                        "noncestr"      =>  $noncestr,
+                        "timestamp"     =>  $timestamp
+                    ]
+                );
+        $str = "$url=".$url;
+        $signature = sha1($str);
+        return ["signature"=>$signature,"noncestr"=>$noncestr,"timestamp"=>$timestamp,"url"=>$url];
     }
 
     /**

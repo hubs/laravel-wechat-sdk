@@ -166,6 +166,10 @@ Route::any('/weixin',function(){
 
 * getQrcodeImgByTicket 通过ticket换取二维码
 * getQrcodeTicket 创建二维码ticket
+
+微信JS－SDK使用说明
+
+* 获得配置参数signature
  
 ##4、测试
 
