@@ -62,6 +62,18 @@ Route::any('/weixin',function(){
 
   ```
         $message = WeChatServer::getMessage();
+        //$message为数组,
+        //例如，用户在扫描二维码后，将获得的消息格式如下
+        //[
+        //   'from' => '微信用户的open_id',
+        //   'to'   => '公众账号的原始id',
+        //   'time' =>'消息创建的时的时间戳',
+        //   'datetime'=> '日期',
+        //   'type'    => 'event',
+        //   'event'   => 'scan',
+        //   'key'     => 'qrcode中包含的scene_id',
+        //   'ticket'  => '用来换取qrcode的ticket'
+        //]
 
   ```
 
@@ -166,6 +178,20 @@ Route::any('/weixin',function(){
 
 * getQrcodeImgByTicket 通过ticket换取二维码
 * getQrcodeTicket 创建二维码ticket
+
+```
+    Route::any('/weixin',function(){
+        //生成长久二维码
+        $option['scene_id'=>'1314520'];
+        //如需要临时二维码10分钟
+        //$option['scene_id'=>'13131','expire'=>600];
+        $code_ticket = WeChatClient::getQrcodeTicket($option);
+        //使用Response::make相应二维码到页面
+        return Response::make( WeChatClient::getQrcodeImgByTicket($code_ticket), 200, [
+                "Content-type"=>"image/jpg"
+        ]);
+    });
+```
 
 微信JS－SDK使用说明
 
