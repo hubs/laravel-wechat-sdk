@@ -331,9 +331,9 @@ class WeChatClient {
         }
 
         $access_token = $this->getAccessToken();
-        $url          = self::$_URL_FILE_API_ROOT . "/cgi-bin/ticket/getticket??access_token=$access_token&type=jsapi";
-        $res          = json_decode(self::get($url), TRUE); 
-        
+        $url          = self::$_URL_API_ROOT . "/cgi-bin/ticket/getticket?access_token=$access_token&type=jsapi";
+        $res          = json_decode(self::get($url), TRUE);
+
         if (self::checkIsSuc($res))
         {
             self::$_jsapiTicketCache[$appid] = $jsTicketInfo = array(
@@ -349,21 +349,17 @@ class WeChatClient {
 
     /**
      * [getSignature description]
-     * @param  string   $nocestr   
-     * @param  int      $timestamp 
-     * @param  string   $url       
-     * @return array   
+     * @param  string   $nocestr
+     * @param  int      $timestamp
+     * @param  string   $url
+     * @return array
      */
     public function getSignature($noncestr,$timestamp,$url)
     {
-        $str = http_build_query(
-                    [
-                        "jsapi_ticket"  =>  $this->_getJSticket(),
-                        "noncestr"      =>  $noncestr,
-                        "timestamp"     =>  $timestamp
-                    ]
-                );
-        $str = "$url=".$url;
+        $str = "jsapi_ticket=" . $this->_getJSticket();
+        $str .= "&noncestr=" . $noncestr;
+        $str .= "&timestamp=" . $timestamp;
+        $str .= "&url=".$url;
         $signature = sha1($str);
         return ["signature"=>$signature,"noncestr"=>$noncestr,"timestamp"=>$timestamp,"url"=>$url];
     }
