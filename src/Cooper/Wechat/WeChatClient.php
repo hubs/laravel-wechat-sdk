@@ -305,6 +305,20 @@ class WeChatClient {
     }
 
     /**
+     * 生成随机字符串
+     * @param int $length
+     * @return string
+     */
+    private function _createNonceStr($length = 16) {
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $str = "";
+        for ($i = 0; $i < $length; $i++) {
+            $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+        }
+        return $str;
+    }
+
+    /**
      * 获取jsapi_ticket
      * @param int $ticketOnly
      * @param int $nocache
@@ -349,19 +363,20 @@ class WeChatClient {
 
     /**
      * [getSignature description]
-     * @param  string   $nocestr
-     * @param  int      $timestamp
      * @param  string   $url
      * @return array
      */
-    public function getSignature($noncestr,$timestamp,$url)
+    public function getSignature($url)
     {
+        $nonceStr = $this->_createNonceStr();
+        $timestamp = time();
+
         $str = "jsapi_ticket=" . $this->_getJSticket();
-        $str .= "&noncestr=" . $noncestr;
+        $str .= "&noncestr=" . $nonceStr;
         $str .= "&timestamp=" . $timestamp;
-        $str .= "&url=".$url;
+        $str .= "&url=" . $url;
         $signature = sha1($str);
-        return ["signature"=>$signature,"noncestr"=>$noncestr,"timestamp"=>$timestamp,"url"=>$url];
+        return ["signature"=>$signature,"noncestr"=>$nonceStr,"timestamp"=>$timestamp,"url"=>$url];
     }
 
     /**
