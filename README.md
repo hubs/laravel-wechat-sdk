@@ -195,8 +195,24 @@ Route::any('/weixin',function(){
 
 微信JS－SDK使用说明
 
-* 获得配置参数signature
- 
+* getSignature 获得配置参数，传入 `url` 参数即可生成，`url` 建议按照微信官方示例代码生成，如下
+```
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+```
+或使用拼接方式
+```
+    $url = 'http://host/';
+    $input = Input::all();
+    if (!empty($input)) {
+      $url .= '?';
+      foreach ($input as $key => $val) {
+        $url .= "$key=$val&";
+      }
+      $url = substr($url, 0, -1);
+    }
+```
+
 ##4、测试
 
 安装 Chrome 插件
