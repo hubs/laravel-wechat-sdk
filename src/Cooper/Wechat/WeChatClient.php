@@ -16,8 +16,8 @@ class WeChatClient {
     public static $_URL_FILE_API_ROOT = 'http://file.api.weixin.qq.com';
 
     public static $_URL_QR_ROOT = 'http://mp.weixin.qq.com';
-
-    public static $_QRCODE_TICKET_DEFAULT_ID = 1;
+public
+     static $_QRCODE_TICKET_DEFAULT_ID = 1;
 
     public static $ERRCODE_MAP = array(
         '-1'    => '&#x7CFB;&#x7EDF;&#x7E41;&#x5FD9;',
@@ -593,6 +593,33 @@ class WeChatClient {
             'thumb_media_id' => $thumb_mid,
             'hqmusicurl'     => $hq_url || $url
         ));
+    }
+
+
+       /**
+     * @param $to           关注者openId
+     * @param $jumpUrl      点击跳转地址
+     * @param $template_id  模板ID
+     * @param array $data   模板数据
+     * @return bool|string
+     */
+    public function sendTemplate($to,$jumpUrl,$template_id,$data=array(),$defaultTopColor='#FF0000'){
+        $json = json_encode(
+            array(
+                'touser'        => $to,
+                'template_id'   => $template_id,
+                "url"           => $jumpUrl,
+                "topcolor"      => $defaultTopColor,
+                'data'          => $data,
+            )
+        );
+        //如果是debug状态下,直接返回内容
+        if(Input::get('debug') == 'true') return $json;
+
+        $access_token = $this->getAccessToken();
+        $url          = self::$_URL_API_ROOT . "/cgi-bin/message/template/send?access_token=$access_token";
+        $res = self::post($url, $json);
+        return self::checkIsSuc($res);
     }
 
     /**
